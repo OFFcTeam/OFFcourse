@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +29,4 @@ public class User {
 
     @Enumerated(value = EnumType.STRING)
     private Role role;
-
-    @OneToMany(mappedBy = "user")
-    private List<Token> tokens;
 }
