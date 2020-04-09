@@ -2,21 +2,27 @@ package ru.itis.offcourse.security;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.itis.offcourse.models.User;
 
 import java.util.Collection;
+import java.util.Set;
 
 public class UserDetailsImpl implements UserDetails {
 
     private User user;
+    private Set<GrantedAuthority> grantedAuthorities;
 
-    public UserDetailsImpl(User user) {
+    public UserDetailsImpl(User user,
+                           Set<GrantedAuthority> grantedAuthorities) {
         this.user = user;
+        this.grantedAuthorities = grantedAuthorities;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return grantedAuthorities;
     }
 
     @Override
@@ -36,7 +42,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return user.getIsUserNonLocked();
     }
 
     @Override

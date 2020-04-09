@@ -10,42 +10,57 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import ru.itis.offcourse.jwt.JwtHelper;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    @Qualifier("customUserDetailsService")
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtHelper jwtHelper;
+
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Autowired
-    @Qualifier("customUserDetailsService")
-    private UserDetailsService userDetailsService;
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/register").permitAll()
-                .antMatchers("/hello").authenticated()
+        http.cors().and()
+            .csrf().disable()
+            .authorizeRequests()
+                .antMatchers("/swagger-ui.html#/**").permitAll()
+                .antMatchers("/login").permitAll()
+                .antMatchers("/registration").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                .formLogin()
-                .loginPage("/login")
-                .usernameParameter("email")
-                .passwordParameter("password")
-                .failureUrl("/login?error")
-                .permitAll()
-                .defaultSuccessUrl("/hello")
-                .and()
-                .logout().logoutSuccessUrl("/login")
-                .permitAll();
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .and()
+        .addFilterBefore(jwtHelper, JwtHelper.class);
+
+//                .antMatchers("/registration").permitAll()
+//                .antMatchers("/profile").authenticated()
+//                .and()
+//            .formLogin()
+//                .loginPage("/login")
+//                .usernameParameter("login")
+//                .passwordParameter("password")
+//                .permitAll()
+//                .defaultSuccessUrl("/profile")
+//                .and()
+//            .logout()
+//                .logoutSuccessUrl("/login")
+//                .permitAll();
     }
 
     @Bean

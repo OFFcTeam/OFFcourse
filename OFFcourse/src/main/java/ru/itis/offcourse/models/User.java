@@ -3,7 +3,8 @@ package ru.itis.offcourse.models;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
+import java.sql.Date;
+import java.util.Set;
 
 @Builder
 @Getter
@@ -19,14 +20,18 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String firstName;
     private String lastName;
+    private String firstName;
+    private String middleName;
+    private Date birthday;
 
     @Column(length = 1000)
     private String login;
     private String passwordHash;
 
+    @ManyToMany
+    private Set<Role> roles;
 
-    @Enumerated(value = EnumType.STRING)
-    private Role role;
+    private Boolean isUserNonLocked;
+    private Long phone;
 }
