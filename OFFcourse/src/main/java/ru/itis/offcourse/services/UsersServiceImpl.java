@@ -4,9 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.itis.offcourse.dto.UserDto;
-import ru.itis.offcourse.jwt.JwtHelper;
 import ru.itis.offcourse.models.User;
 import ru.itis.offcourse.repositories.UsersRepository;
+import ru.itis.offcourse.security.helper.JwtHelper;
+import ru.itis.offcourse.security.role.Role;
 
 import java.util.Optional;
 
@@ -14,10 +15,10 @@ import java.util.Optional;
 public class UsersServiceImpl implements UserService {
 
     @Autowired
-    private UsersRepository usersRepository;
+    private JwtHelper jwtHelper;
 
     @Autowired
-    private JwtHelper jwtHelper;
+    private UsersRepository usersRepository;
 
     @Autowired
     private PasswordEncoder encoder;
@@ -27,8 +28,8 @@ public class UsersServiceImpl implements UserService {
         Optional<User> candidate = usersRepository.getByLoginIgnoreCase(login);
         if (candidate.isPresent()) {
             User user = candidate.get();
-            if (encoder.matches(user.getPasswordHash(), password)) {
-                return jwtHelper.createToken(user.getLogin(), user.getId());
+            if (encoder.matches(password, user.getPasswordHash())) {
+                return jwtHelper.createToken(user);
             }
         }
         throw new IllegalArgumentException("Login attempt failed");
@@ -45,12 +46,14 @@ public class UsersServiceImpl implements UserService {
                 .middleName(userDto.getMiddleName())
                 .birthday(userDto.getBirthday())
                 .phone(userDto.getPhone())
+                .role(Role.USER)
                 .isUserNonLocked(true)
                 .build();
 
         if (!usersRepository.existsByLoginIgnoreCase(userToSave.getLogin())) {
-            User user = usersRepository.save(userToSave);
-            return jwtHelper.createToken(user.getLogin(), user.getId());
+            User user = usersRepository.saveAndFlush(userToSave);
+
+            return jwtHelper.createToken(user);
         }
         throw new IllegalArgumentException("Register attempt failed");
     }

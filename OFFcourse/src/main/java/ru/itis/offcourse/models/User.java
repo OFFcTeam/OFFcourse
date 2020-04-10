@@ -1,6 +1,7 @@
 package ru.itis.offcourse.models;
 
 import lombok.*;
+import ru.itis.offcourse.security.role.Role;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -29,8 +30,8 @@ public class User {
     private String login;
     private String passwordHash;
 
-    @ManyToMany
-    private Set<Role> roles;
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
 
     private Boolean isUserNonLocked;
     private Long phone;
