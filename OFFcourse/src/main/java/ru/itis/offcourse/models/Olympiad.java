@@ -1,5 +1,4 @@
 package ru.itis.offcourse.models;
 
-
-public class Course {
+public class Olympiad {
 }
