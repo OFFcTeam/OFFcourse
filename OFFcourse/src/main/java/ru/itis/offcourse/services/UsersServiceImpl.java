@@ -10,6 +10,7 @@ import ru.itis.offcourse.security.helper.JwtHelper;
 import ru.itis.offcourse.security.role.Role;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UsersServiceImpl implements UserService {
@@ -22,6 +23,9 @@ public class UsersServiceImpl implements UserService {
 
     @Autowired
     private PasswordEncoder encoder;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public String login(String login, String password) {
@@ -36,7 +40,8 @@ public class UsersServiceImpl implements UserService {
     }
 
     @Override
-    public String register(UserDto userDto) {
+    public void register(UserDto userDto) {
+        String confirmString = UUID.randomUUID().toString();
 
         User userToSave = User.builder()
                 .login(userDto.getLogin())
@@ -48,12 +53,15 @@ public class UsersServiceImpl implements UserService {
                 .phone(userDto.getPhone())
                 .role(Role.USER)
                 .isUserNonLocked(true)
+                .isEmailConfirmed(false)
+                .confirmString(confirmString)
                 .build();
 
         if (!usersRepository.existsByLoginIgnoreCase(userToSave.getLogin())) {
             User user = usersRepository.saveAndFlush(userToSave);
-
-            return jwtHelper.createToken(user);
+            String text = "<a href='http://localhost:8080/confirm/" + user.getConfirmString() + "'>" +"Пройдите по ссылке" + "</a>";
+            emailService.sendMail("Подтвреждение регистрации", text, user.getLogin());
+            return;
         }
         throw new IllegalArgumentException("Register attempt failed");
     }

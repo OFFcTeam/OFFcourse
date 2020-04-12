@@ -33,6 +33,8 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
-    private Boolean isUserNonLocked;
     private Long phone;
+    private Boolean isUserNonLocked;
+    private Boolean isEmailConfirmed;
+    private String confirmString;
 }

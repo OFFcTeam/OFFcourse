@@ -48,4 +48,6 @@ public class OffcourseApplication extends WebMvcConfigurerAdapter {
                 .paths(PathSelectors.any())
                 .build();
     }
+
+
 }
