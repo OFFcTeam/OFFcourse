@@ -1,17 +1,26 @@
 package ru.itis.offcourse.models;
 
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import lombok.*;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Builder
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
 public class EduResource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne(mappedBy = "eduResource")
     private EducationalProgram educationalProgram;
 
     private List<String> hashTags;
@@ -26,5 +35,8 @@ public class EduResource {
     private LocalDateTime startOfCourseEntry;
     private LocalDateTime endOfCourseEntry;
     private LocalDateTime startOfEduProgram;
+
+    @ManyToMany(mappedBy = "eduResources")
+    private List<User> users;
 
 }

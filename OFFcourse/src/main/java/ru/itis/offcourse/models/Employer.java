@@ -1,10 +1,19 @@
 package ru.itis.offcourse.models;
 
+import lombok.*;
 import ru.itis.offcourse.security.role.Role;
 
 import javax.persistence.*;
 import java.util.List;
 
+@Builder
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
 public class Employer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,6 +25,7 @@ public class Employer {
     private Long phone;
 
     private String title;
+    @ManyToOne
     private City city;
     private String detailedInfo;
     private List<Photo> photos;

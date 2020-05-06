@@ -5,6 +5,7 @@ import ru.itis.offcourse.security.role.Role;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.List;
 import java.util.Set;
 
 @Builder
@@ -37,4 +38,13 @@ public class User {
     private Boolean isUserNonLocked;
     private Boolean isEmailConfirmed;
     private String confirmString;
+
+    @OneToMany(mappedBy = "author")
+    private List<Comment> comments;
+
+    @ManyToMany(mappedBy = "users")
+    private List<EduResource> eduResources;
+
+    @OneToMany(mappedBy = "users")
+    private Subscription subscription;
 }
